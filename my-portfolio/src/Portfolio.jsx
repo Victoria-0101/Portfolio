@@ -3,7 +3,8 @@ import { motion, useInView, AnimatePresence, useScroll, useTransform } from "fra
 import {
   Github, Linkedin, Twitter, Copy, Check, ExternalLink,
   ChevronRight, Sparkles, Shield, Layers, Brain, Zap,
-  Globe, Terminal, ArrowUpRight, Code2, Database, Cpu
+  Globe, Terminal, ArrowUpRight, Code2, Database, Cpu,
+  Mail, MessageCircle, Send
 } from "lucide-react";
 
 /* ══════════════════════════════════════════════
@@ -31,6 +32,10 @@ const GlobalStyles = () => (
     @keyframes cursor-blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
+    }
+    @keyframes live-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(34,211,238,0.5); }
+      50% { transform: scale(1.2); opacity: 0.9; box-shadow: 0 0 0 5px rgba(34,211,238,0); }
     }
     @keyframes glow-pulse {
       0%, 100% { box-shadow: 0 0 20px rgba(34,211,238,0.15), 0 0 40px rgba(34,211,238,0.05); }
@@ -267,7 +272,7 @@ const Toast = ({ visible }) => (
       >
         <Check size={13} color="#22d3ee" />
         <span className="mono" style={{ fontSize: "12px", color: "#22d3ee" }}>
-          hello@devportfolio.io — copied to clipboard
+          odunmorayovictoria@gmail.com — copied to clipboard
         </span>
       </motion.div>
     )}
@@ -308,8 +313,8 @@ const Nav = ({ onCopyEmail }) => {
       }}
     >
       {/* Logo */}
-      <span className="mono" style={{ fontSize: "14px", color: "#22d3ee", fontWeight: 500, whiteSpace: "nowrap", letterSpacing: "-0.01em" }}>
-        &lt;<span style={{ color: "#a78bfa" }}>dev</span> /&gt;
+      <span style={{ fontSize: "14px", fontWeight: 800, whiteSpace: "nowrap", letterSpacing: "-0.03em", color: "#fff" }}>
+        Victoria <span style={{ background: "linear-gradient(120deg, #22d3ee, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>Ojo</span>
       </span>
 
       {/* Links */}
@@ -362,6 +367,11 @@ const Hero = ({ onCopyEmail }) => {
   return (
     <section id="hero" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "120px 24px 80px", position: "relative", zIndex: 1, textAlign: "center" }}>
       <motion.div variants={stagger.container} initial="hidden" animate="show" style={{ maxWidth: "800px", width: "100%" }}>
+
+        {/* Name */}
+        <motion.p variants={stagger.item} className="mono" style={{ fontSize: "clamp(11px, 1.5vw, 13px)", color: "#52525b", letterSpacing: "0.18em", marginBottom: "16px", textTransform: "uppercase" }}>
+          Victoria Ojo
+        </motion.p>
 
         {/* Status badge */}
         <motion.div variants={stagger.item} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "100px", border: "1px solid rgba(34,211,238,0.2)", background: "rgba(34,211,238,0.05)", marginBottom: "32px" }}>
@@ -759,7 +769,110 @@ const Work = () => (
 );
 
 /* ══════════════════════════════════════════════
-   TERMINAL CONTACT
+   CONTACT FORM
+══════════════════════════════════════════════ */
+const ContactForm = () => {
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus] = useState("idle"); // idle | sending | sent | error
+
+  const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    if (!form.name || !form.email || !form.message) return;
+    setStatus("sending");
+    try {
+      const res = await fetch("https://formspree.io/f/mjgazrwe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ name: form.name, email: form.email, message: form.message }),
+      });
+      if (res.ok) {
+        setStatus("sent");
+        setForm({ name: "", email: "", message: "" });
+        setTimeout(() => setStatus("idle"), 4000);
+      } else {
+        setStatus("error");
+        setTimeout(() => setStatus("idle"), 4000);
+      }
+    } catch {
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 4000);
+    }
+  };
+
+  const inputStyle = {
+    width: "100%", padding: "10px 14px", borderRadius: "10px",
+    border: "1px solid rgba(255,255,255,0.08)",
+    background: "rgba(255,255,255,0.03)",
+    color: "#e4e4e7", fontSize: "13px", outline: "none",
+    fontFamily: "'Syne', sans-serif",
+    transition: "border-color 0.2s, background 0.2s",
+  };
+
+  return (
+    <div style={{ padding: "20px", background: "rgba(255,255,255,0.018)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "14px" }}>
+      <span className="mono" style={{ fontSize: "11px", color: "#52525b", display: "block", marginBottom: "14px", letterSpacing: "0.1em" }}>// SEND A MESSAGE</span>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        {/* Name */}
+        <input
+          name="name" value={form.name} onChange={handleChange}
+          placeholder="Your name"
+          style={inputStyle}
+          onFocus={e => { e.target.style.borderColor = "rgba(34,211,238,0.4)"; e.target.style.background = "rgba(34,211,238,0.04)"; }}
+          onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.background = "rgba(255,255,255,0.03)"; }}
+        />
+        {/* Email */}
+        <input
+          name="email" value={form.email} onChange={handleChange}
+          placeholder="Your email" type="email"
+          style={inputStyle}
+          onFocus={e => { e.target.style.borderColor = "rgba(34,211,238,0.4)"; e.target.style.background = "rgba(34,211,238,0.04)"; }}
+          onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.background = "rgba(255,255,255,0.03)"; }}
+        />
+        {/* Message */}
+        <textarea
+          name="message" value={form.message} onChange={handleChange}
+          placeholder="Tell me about your project..."
+          rows={4}
+          style={{ ...inputStyle, resize: "vertical", minHeight: "90px" }}
+          onFocus={e => { e.target.style.borderColor = "rgba(34,211,238,0.4)"; e.target.style.background = "rgba(34,211,238,0.04)"; }}
+          onBlur={e => { e.target.style.borderColor = "rgba(255,255,255,0.08)"; e.target.style.background = "rgba(255,255,255,0.03)"; }}
+        />
+
+        {/* Submit */}
+        <button
+          onClick={handleSubmit}
+          disabled={status === "sending" || status === "sent"}
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+            padding: "11px 20px", borderRadius: "10px",
+            border: status === "sent" ? "1px solid rgba(74,222,128,0.4)" : status === "error" ? "1px solid rgba(248,113,113,0.4)" : "1px solid rgba(34,211,238,0.35)",
+            background: status === "sent" ? "rgba(74,222,128,0.08)" : status === "error" ? "rgba(248,113,113,0.08)" : "rgba(34,211,238,0.08)",
+            color: status === "sent" ? "#4ade80" : status === "error" ? "#f87171" : "#22d3ee",
+            fontSize: "13px", fontWeight: 700, cursor: status === "sending" || status === "sent" ? "default" : "pointer",
+            transition: "all 0.2s", fontFamily: "'Syne', sans-serif",
+            opacity: status === "sending" ? 0.7 : 1,
+          }}
+          onMouseEnter={e => { if (status === "idle") { e.currentTarget.style.background = "rgba(34,211,238,0.16)"; e.currentTarget.style.borderColor = "rgba(34,211,238,0.6)"; } }}
+          onMouseLeave={e => { if (status === "idle") { e.currentTarget.style.background = "rgba(34,211,238,0.08)"; e.currentTarget.style.borderColor = "rgba(34,211,238,0.35)"; } }}
+        >
+          {status === "sent"
+            ? <><Check size={14} /> Message Sent!</>
+            : status === "sending"
+            ? "Sending..."
+            : status === "error"
+            ? "Failed — Try Again"
+            : <><Send size={14} /> Send Message</>
+          }
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/* ══════════════════════════════════════════════
 ══════════════════════════════════════════════ */
 const CMDS = {
   help: [
@@ -773,7 +886,7 @@ const CMDS = {
     "  ─────────────────────────────────────────",
   ],
   email: [
-    "  📬  hello@devportfolio.io",
+    "  📬  odunmorayovictoria@gmail.com",
     "  Copy it — let's talk.",
   ],
   socials: [
@@ -792,7 +905,7 @@ const CMDS = {
     "  1. Email me with your vision",
     "  2. I'll respond within 24h",
     "  3. We scope + ship together",
-    "  → hello@devportfolio.io",
+    "  → odunmorayovictoria@gmail.com",
   ],
 };
 
@@ -890,10 +1003,11 @@ const Contact = () => {
           {/* Sidebar */}
           <Reveal delay={0.18}>
             <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+
               {/* Status */}
               <div style={{ padding: "20px", background: "rgba(34,211,238,0.03)", border: "1px solid rgba(34,211,238,0.1)", borderRadius: "14px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
-                  <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#22d3ee", boxShadow: "0 0 8px #22d3ee", display: "inline-block", animation: "cursor-blink 2s ease-in-out infinite" }} />
+                  <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#22d3ee", boxShadow: "0 0 8px #22d3ee", display: "inline-block", animation: "live-pulse 2s ease-in-out infinite" }} />
                   <span className="mono" style={{ fontSize: "11px", color: "#22d3ee", letterSpacing: "0.08em" }}>AVAILABLE NOW</span>
                 </div>
                 <p style={{ fontSize: "13px", color: "#71717a", lineHeight: 1.65 }}>
@@ -902,15 +1016,58 @@ const Contact = () => {
                 </p>
               </div>
 
+              {/* Quick action buttons */}
+              <div style={{ display: "flex", gap: "10px" }}>
+                {/* Email button */}
+                <a
+                  href="mailto:odunmorayovictoria@gmail.com"
+                  style={{
+                    flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px",
+                    padding: "12px 16px", borderRadius: "12px",
+                    border: "1px solid rgba(34,211,238,0.25)",
+                    background: "rgba(34,211,238,0.06)",
+                    color: "#22d3ee", fontSize: "13px", fontWeight: 700,
+                    textDecoration: "none", transition: "all 0.2s",
+                    fontFamily: "'Syne', sans-serif",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(34,211,238,0.14)"; e.currentTarget.style.borderColor = "rgba(34,211,238,0.5)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(34,211,238,0.06)"; e.currentTarget.style.borderColor = "rgba(34,211,238,0.25)"; }}
+                >
+                  <Mail size={14} /> Send Email
+                </a>
+
+                {/* WhatsApp button */}
+                <a
+                  href="https://wa.me/2348136910983"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "7px",
+                    padding: "12px 16px", borderRadius: "12px",
+                    border: "1px solid rgba(37,211,102,0.25)",
+                    background: "rgba(37,211,102,0.06)",
+                    color: "#25d366", fontSize: "13px", fontWeight: 700,
+                    textDecoration: "none", transition: "all 0.2s",
+                    fontFamily: "'Syne', sans-serif",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "rgba(37,211,102,0.14)"; e.currentTarget.style.borderColor = "rgba(37,211,102,0.5)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "rgba(37,211,102,0.06)"; e.currentTarget.style.borderColor = "rgba(37,211,102,0.25)"; }}
+                >
+                  <MessageCircle size={14} /> WhatsApp
+                </a>
+              </div>
+
+              {/* Contact Form */}
+              <ContactForm />
+
               {/* Socials */}
               <div style={{ padding: "20px", background: "rgba(255,255,255,0.018)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "14px", display: "flex", flexDirection: "column", gap: "8px" }}>
                 <span className="mono" style={{ fontSize: "11px", color: "#52525b", letterSpacing: "0.1em", marginBottom: "6px" }}>// CONNECT</span>
                 {[
-                  { icon: <Github size={15} />, label: "GitHub", sub: "github.com/devportfolio", color: "#e4e4e7" },
-                  { icon: <Linkedin size={15} />, label: "LinkedIn", sub: "linkedin.com/in/dev", color: "#60a5fa" },
-                  { icon: <Twitter size={15} />, label: "Twitter / X", sub: "@vibecoder", color: "#38bdf8" },
-                ].map(({ icon, label, sub, color }) => (
-                  <a key={label} href="#" className="social-btn">
+                  { icon: <Github size={15} />, label: "GitHub", sub: "github.com/Victoria-0101", color: "#e4e4e7", href: "https://github.com/Victoria-0101" },
+                  { icon: <Linkedin size={15} />, label: "LinkedIn", sub: "linkedin.com/in/ojovictoria", color: "#60a5fa", href: "https://www.linkedin.com/in/ojovictoria" },
+                ].map(({ icon, label, sub, color, href }) => (
+                  <a key={label} href={href} target="_blank" rel="noreferrer" className="social-btn">
                     <div style={{ width: "32px", height: "32px", borderRadius: "9px", background: `${color}12`, border: `1px solid ${color}20`, display: "flex", alignItems: "center", justifyContent: "center", color, flexShrink: 0 }}>
                       {icon}
                     </div>
@@ -923,11 +1080,12 @@ const Contact = () => {
                 ))}
               </div>
 
-              {/* Email card */}
+              {/* Email display */}
               <div style={{ padding: "18px 20px", background: "rgba(255,255,255,0.018)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "14px" }}>
                 <span className="mono" style={{ fontSize: "11px", color: "#52525b", display: "block", marginBottom: "6px", letterSpacing: "0.1em" }}>// EMAIL</span>
-                <span className="mono" style={{ fontSize: "13px", color: "#22d3ee" }}>hello@devportfolio.io</span>
+                <span className="mono" style={{ fontSize: "13px", color: "#22d3ee" }}>odunmorayovictoria@gmail.com</span>
               </div>
+
             </div>
           </Reveal>
         </div>
@@ -943,7 +1101,7 @@ const Footer = () => (
   <footer style={{ padding: "24px", borderTop: "1px solid rgba(255,255,255,0.04)", position: "relative", zIndex: 1 }}>
     <div style={{ maxWidth: "1060px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
       <span className="mono" style={{ fontSize: "11px", color: "#27272a" }}>
-        © 2025 — Built with precision & vibes.
+        © 2025 Victoria Ojo — Built with precision & vibes.
       </span>
       <span className="mono" style={{ fontSize: "11px", color: "#27272a" }}>
         Powered by caffeine &amp; LLMs.
@@ -960,7 +1118,7 @@ export default function Portfolio() {
   const timerRef = useRef(null);
 
   const copyEmail = useCallback(() => {
-    navigator.clipboard.writeText("hello@devportfolio.io").catch(() => {});
+    navigator.clipboard.writeText("odunmorayovictoria@gmail.com").catch(() => {});
     if (timerRef.current) clearTimeout(timerRef.current);
     setToastVisible(true);
     timerRef.current = setTimeout(() => setToastVisible(false), 2800);
