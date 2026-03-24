@@ -1065,7 +1065,8 @@ const Contact = () => {
                 <span className="mono" style={{ fontSize: "11px", color: "#52525b", letterSpacing: "0.1em", marginBottom: "6px" }}>// CONNECT</span>
                 {[
                   { icon: <Github size={15} />, label: "GitHub", sub: "github.com/Victoria-0101", color: "#e4e4e7", href: "https://github.com/Victoria-0101" },
-                  { icon: <Linkedin size={15} />, label: "LinkedIn", sub: "linkedin.com/in/ojovictoria", color: "#60a5fa", href: "https://www.linkedin.com/in/ojovictoria" },
+                  { icon: <Linkedin size={15} />, label: "LinkedIn", sub: "linkedin.com/in/ojo-victoria", color: "#60a5fa", href: "https://www.linkedin.com/in/ojo-victoria-0a0997357/" },
+
                 ].map(({ icon, label, sub, color, href }) => (
                   <a key={label} href={href} target="_blank" rel="noreferrer" className="social-btn">
                     <div style={{ width: "32px", height: "32px", borderRadius: "9px", background: `${color}12`, border: `1px solid ${color}20`, display: "flex", alignItems: "center", justifyContent: "center", color, flexShrink: 0 }}>
